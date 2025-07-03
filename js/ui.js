@@ -28,15 +28,39 @@ export function showScreen(screenId) {
 
 // HUD Updates
 export function updateUI() {
-    document.getElementById('score').textContent = gameState.score;
+    document.getElementById('score').textContent = gameState.score.toLocaleString();
     document.getElementById('level').textContent = gameState.level;
     document.getElementById('bullets').textContent = gameState.isBerserker ? '∞' : gameState.bullets;
     document.getElementById('highscoreValue').textContent = gameState.highScore;
     
-    updateHeartsDisplay();
+    updateHealthBar();
     
     if (gameState.currentState === GameState.LEVEL_COMPLETE) {
         updateBuffButtons();
+    }
+}
+
+// NEW: Update Health Bar with segments only (no text)
+export function updateHealthBar() {
+    const healthContainer = document.getElementById('healthContainer');
+    if (!healthContainer) return;
+    
+    // Clear existing segments
+    healthContainer.innerHTML = '';
+    
+    // Create segments based on maxLives
+    for (let i = 0; i < gameState.maxLives; i++) {
+        const segment = document.createElement('div');
+        segment.className = 'health-segment';
+        
+        // Add appropriate class based on health status
+        if (i >= gameState.lives) {
+            segment.classList.add('empty');
+        } else if (gameState.lives <= 1) {
+            segment.classList.add('damage');
+        }
+        
+        healthContainer.appendChild(segment);
     }
 }
 
@@ -55,79 +79,16 @@ export function updateEnhancedDisplays() {
     updateEnhancedComboDisplay();
 }
 
-export function updateHeartsDisplay() {
-    const heartsContainer = document.getElementById('heartsContainer');
-    if (!heartsContainer) return;
-    
-    heartsContainer.innerHTML = '';
-    
-    // Shield display removed - now handled by enhanced buff display
-    
-    // Hearts display
-    for (let i = 0; i < gameState.maxLives; i++) {
-        const heart = document.createElement('div');
-        heart.className = 'heart' + (i >= gameState.lives ? ' empty' : '');
-        heart.textContent = '♥';
-        heartsContainer.appendChild(heart);
-    }
-}
+// Remove old updateHeartsDisplay function as it's replaced by updateHealthBar
 
 export function updateActiveBuffsDisplay() {
-    const buffDisplay = document.getElementById('activeBuffs');
-    if (!buffDisplay) return;
-    
-    let buffText = '';
-    
-    // Permanent buffs
-    if (gameState.activeBuffs.chainLightning > 0) {
-        buffText += '⚡ Chain Lightning ';
-    }
-    if (gameState.activeBuffs.undeadResilience > 0) {
-        buffText += '🧟 Undead Vigor ';
-    }
-    if (gameState.activeBuffs.shadowLeap > 0) {
-        buffText += '🌙 Shadow Leap ';
-    }
-    
-    // Temporary drop buffs
-    Object.keys(activeDropBuffs).forEach(buff => {
-        const remaining = Math.ceil(activeDropBuffs[buff] / 60);
-        switch(buff) {
-            case 'speedBoost': buffText += `⚡(${remaining}s) `; break;
-            case 'jumpBoost': buffText += `🚀(${remaining}s) `; break;
-            case 'scoreMultiplier': buffText += `💰(${remaining}s) `; break;
-            case 'magnetMode': buffText += `🌟(${remaining}s) `; break;
-            case 'berserkerMode': buffText += `🔥(${remaining}s) `; break;
-            case 'ghostWalk': buffText += `👻(${remaining}s) `; break;
-            case 'timeSlow': buffText += `⏰(${remaining}s) `; break;
-        }
-    });
-    
-    if (buffText) {
-        buffDisplay.textContent = buffText;
-        buffDisplay.style.display = 'block';
-    } else {
-        buffDisplay.style.display = 'none';
-    }
+    // This function is now handled by updateEnhancedBuffDisplay
+    // Keeping empty function for compatibility
 }
 
 export function updateComboDisplay() {
-    let comboDisplay = document.getElementById('comboDisplay');
-    
-    if (!comboDisplay) {
-        comboDisplay = document.createElement('div');
-        comboDisplay.id = 'comboDisplay';
-        comboDisplay.className = 'combo-display';
-        document.getElementById('gameContainer').appendChild(comboDisplay);
-    }
-    
-    // Only show combo display for 2x and above
-    if (gameState.comboCount >= 2) {
-        comboDisplay.textContent = `${gameState.comboCount}x Combo!`;
-        comboDisplay.style.display = 'block';
-    } else {
-        comboDisplay.style.display = 'none';
-    }
+    // This function is now handled by updateEnhancedComboDisplay
+    // Keeping empty function for compatibility
 }
 
 export function updatePauseScreen() {

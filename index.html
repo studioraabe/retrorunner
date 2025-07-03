@@ -5,43 +5,63 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Retro Runner V.078</title>
     <link rel="stylesheet" href="styles/main.css">
-  <link rel="stylesheet" href="styles/enhanced-ui.css"> 
+    <link rel="stylesheet" href="styles/enhanced-ui.css"> 
     
 </head>
 <body>
-    
+        <h1 class="logo pulse">Retro Runner</h1>
     <div id="gameContainer">
-    <h1 class="logo pulse">Retro Runner</h1>
 
-        <div id="ui" class="ui-panel">
-            <div>
-                <span class="ui-label" id="scoreLabel">Score</span>
-                <span class="ui-value" id="score">0</span>
+
+        <!-- Health Bar - Links Oben -->
+        <div id="healthBar" class="ui-panel">
+            <div class="health-container" id="healthContainer">
+                <div class="health-segment"></div>
+                <div class="health-segment"></div>
+                <div class="health-segment"></div>
+                <div class="health-segment"></div>
+                <div class="health-segment"></div>
             </div>
-            <div>
+        </div>
+
+        <!-- Bullet Count - Rechts Oben -->
+        <div id="bulletCount" class="ui-panel">
+          
+            <span class="bulletcountValue" id="bullets">0</span>
+               <span class="ui-label" id="bulletsLabel" style="font-size: 24px; margin-top: -4px; color:#00d4ff">🗲</span>
+          
+        </div>
+
+        <!-- Score/Level Panel - Oben Mitte -->
+        <div id="scorePanel" class="ui-panel">
+            <div class="score-item">
                 <span class="ui-label" id="levelLabel">Level</span>
                 <span class="ui-value" id="level">1</span>
             </div>
-          
-            <div class="active-buffs" id="activeBuffs" style="display: none;"></div>
-        </div>
-          <div class="ui-panel bulletcount">
-               <span class="bulletcountValue" id="bullets">0</span>
-                <span class="ui-label" id="bulletsLabel" style="font-size: 24px; margin-top: -4px; color:#00d4ff">🗲</span>
-               
+            <div class="score-item">
+                <span class="ui-label" id="scoreLabel">Score</span>
+                <span class="ui-value" id="score">0</span>
             </div>
-        <div id="centerUI" class="ui-panel">
-            <div class="hearts-container" id="heartsContainer"></div>
+            
         </div>
+
+        <!-- Combo Display - Unten Mitte -->
+        <div id="comboDisplay" class="combo-display-enhanced" style="display: none;"></div>
+
+        <!-- Enhanced Buffs - Links Unten -->
+        <div id="enhancedBuffs" class="enhanced-buffs-container" style="display: none;"></div>
         
+        <!-- Mute Button - Rechts Unten -->
         <div id="muteButton" onclick="toggleMute()">
             <span id="muteIcon">🔊</span>
         </div>
         
+        <!-- Info Button - Rechts Unten (neben Mute) 
         <div id="infoButton" onclick="toggleInfoOverlay()">
             <span>ℹ️</span>
-        </div>
+        </div>-->
         
+        <!-- Highscore (hidden by default) -->
         <div id="highscore" class="ui-panel">
             <div class="ui-label" id="highscoreLabel">High Score</div>
             <div class="ui-value" id="highscoreValue">0</div>
@@ -240,10 +260,6 @@
     </div>
     <button class="btn" onclick="toggleInfoOverlay()">Got it!</button>
         </div></div>
-    
- <!-- <div id="instructions">
-        <span id="instructionText"><span class="key">W</span>/<span class="key">↑</span> to Jump • <span class="key">SPACE</span>/<span class="key">S</span> to Shoot • <span class="key">A</span><span class="key">D</span>/<span class="key">Arrows</span> to Move • <span class="key">ESC</span> to Pause</span>
-    </div> -->
     
     <!-- Load JavaScript as ES6 Module -->
     <script type="module">

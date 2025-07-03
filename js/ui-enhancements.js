@@ -19,7 +19,7 @@ export function initEnhancedContainers() {
     buffContainer.className = 'enhanced-buffs-container';
     buffContainer.style.cssText = `
         position: absolute !important;
-        top: 16px !important;
+        bottom: 12px !important;
         left: 16px !important;
         z-index: 20 !important;
     `;
@@ -157,7 +157,7 @@ export function updateEnhancedBuffDisplay() {
         buffContainer.className = 'enhanced-buffs-container';
         buffContainer.style.cssText = `
             position: absolute !important;
-            top: 16px !important;
+            bottom: 12px !important;
             left: 16px !important;
             max-width: 160px;
             z-index: 100 !important;

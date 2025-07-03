@@ -71,7 +71,7 @@ function drawTeslaCoil(ctx, x, y, width, height, obstacle) {
         const beamX = x + width/2 - 8;
         const beamY = actualY + height; // Startet am unteren Ende der Tesla Coil
         const beamWidth = 16;
-        const beamHeight = CANVAS.groundY - beamY; // Bis zum Boden
+      const beamHeight = CANVAS.height - beamY; 
         
         // VERSTÄRKTER Main beam
         ctx.fillStyle = 'rgba(0, 255, 255, 1.0)'; // Vollständig sichtbar
@@ -101,7 +101,7 @@ function drawTeslaCoil(ctx, x, y, width, height, obstacle) {
         // VERSTÄRKTER Ground impact
         ctx.fillStyle = 'rgba(255, 255, 0, 1.0)';
         const impactSize = 30; // Größerer Einschlag
-        ctx.fillRect(beamX - impactSize/2 + beamWidth/2, CANVAS.groundY - 8, impactSize, 16);
+        ctx.fillRect(beamX - impactSize/2 + beamWidth/2, CANVAS.groundY - 280, impactSize, 16);
         
         // Zusätzliche Impact-Partikel
         ctx.fillStyle = 'rgba(255, 150, 0, 0.8)';
@@ -112,7 +112,7 @@ function drawTeslaCoil(ctx, x, y, width, height, obstacle) {
         }
         
         // VERSTÄRKTER Screen flash effect
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.15)'; // Stärker sichtbar
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.02)'; // Stärker sichtbar
         ctx.fillRect(0, 0, CANVAS.width, CANVAS.height);
     }
     
@@ -128,7 +128,7 @@ function drawTeslaCoil(ctx, x, y, width, height, obstacle) {
 }
 
 function drawFrankensteinTable(ctx, x, y, width, height, obstacle) {
-    const scale = 1;
+    const scale = 1.1;
     const timeScale = Date.now() * 0.001;
     
     // Tisch steht auf dem Boden
@@ -153,29 +153,31 @@ function drawFrankensteinTable(ctx, x, y, width, height, obstacle) {
     ctx.fillRect(x + 2, tableY + height - 18, width - 4, 2);
     
     // Frankenstein-Körper auf dem Tisch
+   const bodyY = tableY + height - 35; // Körper liegt AUF dem Tisch, nicht darin
+    
     ctx.fillStyle = '#8FBC8F'; // Grünliche Haut
-    ctx.fillRect(x + 6, tableY + height - 45, width - 12, 20); // Torso
-    ctx.fillRect(x + 8, tableY + height - 50, width - 16, 8); // Kopf
+    ctx.fillRect(x + 6, bodyY - 20, width - 12, 20); // Torso
+    ctx.fillRect(x + 8, bodyY - 28, width - 16, 8); // Kopf
     
     // Körper-Details
     ctx.fillStyle = '#556B2F'; // Dunklere Haut-Schatten
-    ctx.fillRect(x + 7, tableY + height - 42, 2, 15); // Bauch-Naht
-    ctx.fillRect(x + width - 9, tableY + height - 42, 2, 15); // Seiten-Naht
-    ctx.fillRect(x + width/2 - 1, tableY + height - 48, 2, 6); // Hals-Naht
+    ctx.fillRect(x + 7, bodyY - 17, 2, 15); // Bauch-Naht
+    ctx.fillRect(x + width - 9, bodyY - 17, 2, 15); // Seiten-Naht
+    ctx.fillRect(x + width/2 - 1, bodyY - 26, 2, 6); // Hals-Naht
     
     // Arme
     ctx.fillStyle = '#8FBC8F';
-    ctx.fillRect(x + 2, tableY + height - 40, 6, 12); // Linker Arm
-    ctx.fillRect(x + width - 8, tableY + height - 40, 6, 12); // Rechter Arm
+    ctx.fillRect(x + 2, bodyY - 15, 6, 12); // Linker Arm
+    ctx.fillRect(x + width - 8, bodyY - 15, 6, 12); // Rechter Arm
     
     // Beine
-    ctx.fillRect(x + 8, tableY + height - 28, 4, 8); // Linkes Bein
-    ctx.fillRect(x + width - 12, tableY + height - 28, 4, 8); // Rechtes Bein
+    ctx.fillRect(x + 8, bodyY - 3, 4, 8); // Linkes Bein
+    ctx.fillRect(x + width - 12, bodyY - 3, 4, 8); // Rechtes Bein
     
     // Metall-Bolzen im Kopf
     ctx.fillStyle = '#C0C0C0';
-    ctx.fillRect(x + 6, tableY + height - 47, 3, 3); // Linker Bolzen
-    ctx.fillRect(x + width - 9, tableY + height - 47, 3, 3); // Rechter Bolzen
+    ctx.fillRect(x + 6, bodyY - 25, 3, 3); // Linker Bolzen
+    ctx.fillRect(x + width - 9, bodyY - 25, 3, 3); // Rechter Bolzen
     
     // Labor-Ausrüstung um den Tisch
     const equipmentFloat = Math.sin(timeScale * 3) * 1;
@@ -322,7 +324,7 @@ function drawFrankensteinTable(ctx, x, y, width, height, obstacle) {
         }
         
         // VERSTÄRKTER Screen flash effect
-        ctx.fillStyle = 'rgba(255, 255, 200, 0.12)';
+        ctx.fillStyle = 'rgba(255, 255, 200, 0.02)';
         ctx.fillRect(0, 0, CANVAS.width, CANVAS.height);
     }
     

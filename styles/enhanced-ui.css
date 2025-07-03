@@ -1,4 +1,4 @@
-/* enhanced-ui.css - Enhanced UI Styles - COMPLETELY FIXED */
+/* enhanced-ui.css - Enhanced UI Styles - UPDATED POSITIONING */
 
 /* Ensure game container has proper positioning */
 #gameContainer {
@@ -6,10 +6,10 @@
     
 }
 
-/* 1. ENHANCED COMBO DISPLAY - DEZENTERE VERSION */
+/* 1. ENHANCED COMBO DISPLAY - UNTEN MITTE */
 .combo-display-enhanced {
     position: absolute !important;
-    top: 52px !important;
+    bottom: 20px !important;
     left: 50% !important;
     transform: translateX(-50%) !important;
     text-align: center;
@@ -36,8 +36,6 @@
     border-radius: 12px;
     border: 1px solid rgba(255, 255, 255, 0.1) !important;
 }
-
-
 
 /* Combo Nummer - dezenter */
 .combo-number-subtle {
@@ -80,19 +78,18 @@
     100% { transform: scale(1) rotate(0deg); }
 }
 
-/* 2. ENHANCED BUFF DISPLAY */
+/* 2. ENHANCED BUFF DISPLAY - LINKS UNTEN */
 .enhanced-buffs-container {
     position: absolute !important;
-    top: 16px !important;
-    left: 16px !important;
+    bottom: 12px !important;
+    left: 20px !important;
     max-width: 160px;
     z-index: 30 !important;
     pointer-events: none;
     min-width: 40px;
     min-height: 40px;
     padding: 4px !important;
-        overflow: hidden;
-
+    overflow: hidden;
 }
 
 .buff-item {
@@ -100,7 +97,7 @@
     align-items: center;
     background: rgba(0, 0, 0, 0.8);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
+    border-radius: 12px;
     padding: 8px 12px;
     margin-bottom: 8px;
     transition: all 0.3s ease;
@@ -439,7 +436,7 @@
 @media (max-width: 768px) {
     .enhanced-buffs-container {
         max-width: 100px;
-        top: 80px;
+        bottom: 80px !important;
     }
     
     .buff-item {
@@ -455,7 +452,7 @@
     }
     
     .combo-display-enhanced.combo-subtle {
-        left: 50% !important;
+        bottom: 140px !important;
         transform: translateX(-50%) scale(0.9);
     }
     
