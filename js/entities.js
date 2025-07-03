@@ -161,7 +161,7 @@ export function spawnObstacle(level, gameSpeed, timeSlowFactor) {
             const config = ENEMY_CONFIG[obstacleTypeStr];
             obstacleWidth = config.width;
             obstacleHeight = config.height;
-            obstacleY = CANVAS.groundY - obstacleHeight + 100; // Steht auf dem Boden
+            obstacleY = CANVAS.groundY - obstacleHeight + 150; // Steht auf dem Boden
             timerValue = calculateSpawnTimer(config.timerBase, config.timerMin, level);
         } else if (obstacleType < rockChance) {
             // Rock Logic (garantiert unter 100%)
@@ -216,7 +216,7 @@ export function spawnObstacle(level, gameSpeed, timeSlowFactor) {
         // NEUE Tesla Coil spezielle Properties
         if (obstacleTypeStr === 'teslaCoil') {
             newObstacle.chargeTime = 120; // 2 Sekunden Ladezeit (schneller)
-            newObstacle.zapDuration = 100; // 1.5 Sekunden Strahl
+            newObstacle.zapDuration = 80; // 1.5 Sekunden Strahl
             newObstacle.cooldown = 120;   // 2 Sekunden Pause (schneller)
             newObstacle.state = 'charging'; // STARTET SOFORT mit Laden (nicht idle)
             newObstacle.stateTimer = newObstacle.chargeTime; // Volle Ladezeit
@@ -228,8 +228,8 @@ export function spawnObstacle(level, gameSpeed, timeSlowFactor) {
         // NEUER Frankenstein Table spezielle Properties
         if (obstacleTypeStr === 'frankensteinTable') {
             newObstacle.chargeTime = 120; // 3 Sekunden Ladezeit (langsamer als Tesla)
-            newObstacle.zapDuration = 100; // 2 Sekunden Blitz
-            newObstacle.cooldown = 120;   // 3 Sekunden Pause
+            newObstacle.zapDuration = 80; // 2 Sekunden Blitz
+            newObstacle.cooldown = 180;   // 3 Sekunden Pause
             newObstacle.state = 'charging';   // ÄNDERE: Startet mit Laden statt idle
             newObstacle.stateTimer = newObstacle.chargeTime; // ÄNDERE: Volle Ladezeit statt zufällige Pause
             newObstacle.zapActive = false;
@@ -446,7 +446,7 @@ export function updateObstacles(gameSpeed, enemySlowFactor, level, magnetRange, 
             }
             
             if (gameStateParam.obstaclesAvoided % 10 === 0) {
-                gameStateParam.bullets += 5;
+                gameStateParam.bullets += 10;
             }
         }
         
@@ -499,6 +499,12 @@ export function updateBullets(gameStateParam) {
             // TESLA COIL und FRANKENSTEIN TABLE ÜBERSPRINGEN - Bullets gehen durch
             if (obstacle.type === 'teslaCoil' || obstacle.type === 'frankensteinTable') {
                 continue; // Keine Kollision mit Tesla Coil oder Frankenstein Table
+            }
+            
+            
+             // NEU: BOLTBOX AUCH ÜBERSPRINGEN - Bullets gehen durch
+            if (obstacle.type === 'boltBox') {
+                continue; // BoltBoxen können nicht zerschossen werden!
             }
             
             if (bullet.x < obstacle.x + obstacle.width &&
@@ -975,8 +981,8 @@ export function checkCollisions(gameStateParam) {
             player.y + player.height > hitbox.y) {
             
             if (obstacle.type === 'boltBox') {
-                gameStateParam.bullets += 10;
-                createScorePopup(obstacle.x + obstacle.width/2, obstacle.y, '+10 Bolts');
+                gameStateParam.bullets += 20;
+                createScorePopup(obstacle.x + obstacle.width/2, obstacle.y, '+20 Bolts');
                 obstacles.splice(i, 1);
                 continue;
             }

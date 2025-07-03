@@ -6,7 +6,7 @@ export const GAME_CONSTANTS = {
     LIGHT_GRAVITY: 0.6,
     JUMP_STRENGTH: -10.5,
     DOUBLE_JUMP_STRENGTH: -6,
-    BULLET_SPEED: 20,
+    BULLET_SPEED: 15,
     FPS: 60,
     PLAYER_MOVE_SPEED: 5,
     DAMAGE_RESISTANCE_TIME: 60,
@@ -55,7 +55,7 @@ export const DROP_CONFIG = {
         chance: 0.01,
         items: [
             { type: DropType.SHIELD, chance: 0.20, duration: 0 },
-            { type: DropType.SCORE_MULTIPLIER, chance: 0.30, duration: 1200 },
+            { type: DropType.SCORE_MULTIPLIER, chance: 0.30, duration: 900 },
             { type: DropType.MAGNET_MODE, chance: 0.20, duration: 1200 },
             { type: DropType.BERSERKER_MODE, chance: 0.15, duration: 600 },
             { type: DropType.GHOST_WALK, chance: 0.10, duration: 300 },
@@ -145,13 +145,39 @@ export const CANVAS = {
     groundY: 340
 };
 
-// Enemy spawn chances by level
+// Enemy spawn chances by level - MIT SPECIAL HAZARD SYSTEM
 export const SPAWN_CHANCES = {
-    getBossChance: (level) => Math.min(0.05 + (level * 0.020), 0.3),
-    getFlyingChance: (level, bossChance) => bossChance + Math.min(0.45, 0.20 + (level * 0.015)),
-    getMediumChance: (level, flyingChance) => flyingChance + Math.min(0.20, 0.10 + (level * 0.01)),
-    getHumanChance: (level, mediumChance) => mediumChance + Math.min(0.10, 0.05 + (level * 0.005)),
-    getStaticChance: (humanChance) => humanChance + 0.30
+    getBossChance: (level) => {
+        const baseChance = 0.02;
+        const maxChance = 0.15;
+        const scaleFactor = 0.01;
+        return Math.min(baseChance + (level - 1) * scaleFactor, maxChance);
+    },
+    
+    // NEU: Special Hazards (Tesla & Frankenstein) - bleiben konstant oder steigen
+    getSpecialHazardChance: (level) => {
+        const baseChance = 0.20;  // 20% Basis-Chance
+        const maxChance = 0.30;    // 30% Maximum in späteren Levels
+        const scaleFactor = 0.008; // Langsamer Anstieg
+        return Math.min(baseChance + (level - 1) * scaleFactor, maxChance);
+    },
+    
+    // Innerhalb der Special Hazards: Wie viel % ist Tesla vs Frankenstein
+    getTeslaRatio: () => 0.6,      // 60% der Special Hazards sind Tesla
+    getFrankensteinRatio: () => 0.4, // 40% sind Frankenstein
+    
+    getFlyingChance: (level, bossChance) => {
+        return bossChance + Math.min(0.45, 0.20 + (level * 0.015));
+    },
+    getMediumChance: (level, flyingChance) => {
+        return flyingChance + Math.min(0.20, 0.10 + (level * 0.01));
+    },
+    getHumanChance: (level, mediumChance) => {
+        return mediumChance + Math.min(0.10, 0.05 + (level * 0.005));
+    },
+    getStaticChance: (humanChance) => {
+        return humanChance + 0.30;
+    }
 };
 
 // Enemy configurations
@@ -209,7 +235,7 @@ export const ENEMY_CONFIG = {
         height: 35,
         health: 1,
         points: 10,
-        timerBase: 70,
+        timerBase: 60,
         timerMin: 15
     },
     boltBox: {
@@ -217,7 +243,7 @@ export const ENEMY_CONFIG = {
         height: 16,
         health: 1,
         points: 0,
-        timerBase: 100,
+        timerBase: 80,
         timerMin: 40
     },
     teslaCoil: {

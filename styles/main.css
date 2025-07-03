@@ -200,6 +200,39 @@ body::before {
     50% { opacity: 0.7; }
 }
 
+
+.health-container.shield-active {
+    border-color: rgba(65, 105, 225, 0.5);
+    box-shadow: 0 0 10px rgba(65, 105, 225, 0.3);
+}
+
+/* Blaue Segmente wenn Shield aktiv */
+.health-segment.shielded {
+    background: linear-gradient(90deg, #4169E1 0%, #1E90FF 100%);
+    animation: shieldPulse 2s ease-in-out infinite;
+}
+
+.health-segment.shielded::after {
+    background: linear-gradient(90deg, transparent, rgba(135, 206, 250, 0.5), transparent);
+}
+
+/* Shield Pulse Animation */
+@keyframes shieldPulse {
+    0%, 100% { 
+        opacity: 1;
+        box-shadow: 0 0 5px rgba(65, 105, 225, 0.5);
+    }
+    50% { 
+        opacity: 0.9;
+        box-shadow: 0 0 15px rgba(65, 105, 225, 0.8);
+    }
+}
+
+/* Damage-Segmente bleiben rot, auch mit Shield */
+.health-segment.damage.shielded {
+    background: linear-gradient(90deg, #ff1744 0%, #d50000 100%);
+}
+
 /* BULLET COUNT STYLES */
 #bulletCount {
 position: absolute;

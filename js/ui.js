@@ -48,6 +48,13 @@ export function updateHealthBar() {
     // Clear existing segments
     healthContainer.innerHTML = '';
     
+    // Add shield class to container if shield is active
+    if (gameState.hasShield) {
+        healthContainer.classList.add('shield-active');
+    } else {
+        healthContainer.classList.remove('shield-active');
+    }
+    
     // Create segments based on maxLives
     for (let i = 0; i < gameState.maxLives; i++) {
         const segment = document.createElement('div');
@@ -56,8 +63,13 @@ export function updateHealthBar() {
         // Add appropriate class based on health status
         if (i >= gameState.lives) {
             segment.classList.add('empty');
-        } else if (gameState.lives <= 1) {
+        } else if (gameState.lives <= 1 && !gameState.hasShield) {
             segment.classList.add('damage');
+        }
+        
+        // Add shield class to filled segments when shield is active
+        if (i < gameState.lives && gameState.hasShield) {
+            segment.classList.add('shielded');
         }
         
         healthContainer.appendChild(segment);

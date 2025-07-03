@@ -25,7 +25,7 @@ export const gameState = {
     lives: 4,
     maxLives: 4,
     gameSpeed: 1, // Zurück auf ursprünglichen Wert
-    bullets: 5,
+    bullets: 10,
     level: 1,
     levelProgress: 0,
     highScore: 0,
@@ -78,7 +78,7 @@ export function resetGame() {
     gameState.score = 0;
     gameState.lives = 4;
     gameState.maxLives = 4;
-    gameState.bullets = 5;
+    gameState.bullets = 10;
     gameState.level = 1;
     gameState.levelProgress = 0;
     gameState.gameSpeed = 2; // Zurück auf ursprünglichen Wert
@@ -188,7 +188,7 @@ export function checkLevelComplete() {
             gameState.damageThisLevel = 0;
             gameState.gameSpeed *= 1.1; // 10 % schneller
             if (gameState.gameSpeed > 6) gameState.gameSpeed = 6; // Obergrenze // Zurück auf                                                               ursprünglichen Wert
-            gameState.bullets += 12;
+            gameState.bullets += 10 * gameState.level
         }
     }
 }

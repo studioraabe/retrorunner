@@ -160,8 +160,8 @@ export function collectDrop(drop) {
             break;
             
         case DropType.MEGA_BULLETS:
-            gameState.bullets += 15;
-            createScorePopup(drop.x, drop.y, '+15 Bolts');
+            gameState.bullets += 50;
+            createScorePopup(drop.x, drop.y, '+50 Bolts');
             break;
             
         case DropType.SPEED_BOOST:
