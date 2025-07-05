@@ -442,7 +442,7 @@
 }
 
 .buff-magnetMode .buff-icon {
-    animation: magnetPull 2s ease 4sec;
+    animation: magnetPull 1s ease infinite;
 }
 
 @keyframes berserkerPulse {
@@ -648,47 +648,6 @@
 .screen-shake {
     animation: screenShake 0.2s ease;
 }
-
-.health-segment.shielded {
-    background: linear-gradient(135deg, #4169E1 0%, #1E90FF 100%);
-    border: 2px solid #87CEEB;
-    position: relative;
-    overflow: visible;
-    
-}
-
-.health-segment.shielded::before {
-    content: '';
-    position: absolute;
-    top: -2px;
-    left: -2px;
-    right: -2px;
-    bottom: -2px;
-    background: linear-gradient(135deg, #4169E1 0%, #1E90FF 100%);
-    border-radius: inherit;
-    z-index: -1;
-    animation: shieldGlow 2s ease-in-out infinite;
-}
-
-@keyframes shieldGlow {
-    0%, 100% { 
-        opacity: 0.7;
-        transform: scale(1);
-    }
-    50% { 
-        opacity: 1;
-        transform: scale(1.05);
-    }
-}
-
-.health-segment.shielded:hover {
-    transform: scale(1.1);
-    transition: transform 0.2s ease;
-}
-
-
-.buff-shield {
-	order: -1, } 
 
 @keyframes screenShake {
     0%, 100% { transform: translate(0, 0); }

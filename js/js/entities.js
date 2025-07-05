@@ -772,7 +772,7 @@ if (!obstacle.isFuryCharging && !obstacle.isLeaping) {
             // OMNIDIREKTIONALE DETECTION - keine Richtungseinschränkung
             const horizontalDistance = Math.abs(player.x - obstacle.x);
             const verticalDistance = Math.abs(player.y - obstacle.y);
-            const inRange = horizontalDistance < 350 && verticalDistance < 220;
+            const inRange = horizontalDistance < 350 && verticalDistance < 120;
             
             if (obstacle.spitCooldown <= 0 && inRange) {
                 if (!obstacle.isSpitting) {
@@ -786,6 +786,7 @@ if (!obstacle.isFuryCharging && !obstacle.isLeaping) {
                     }
                     
                     obstacle.hasTargeted = false;
+                    soundManager.powerUp();
                 }
                 
                 if (obstacle.isSpitting && obstacle.spitChargeTime > 0) {
@@ -820,6 +821,7 @@ if (!obstacle.isFuryCharging && !obstacle.isLeaping) {
                         
                         obstacle.spitCooldown = Math.random() * baseCooldown + (baseCooldown - distanceBonus);
                         obstacle.hasTargeted = false;
+                        soundManager.hit();
                     }
                 }
             }
@@ -889,9 +891,9 @@ if (!obstacle.isFuryCharging && !obstacle.isLeaping) {
             const distance = Math.sqrt(dx * dx + dy * dy);
             
             if (distance < magnetRange) {
-                const force = (magnetRange - distance) / magnetRange * 0.6;
-                obstacle.x += dx * force * 0.3;
-                obstacle.y += dy * force * 0.3;
+                const force = (magnetRange - distance) / magnetRange * 0.5;
+                obstacle.x += dx * force * 0.2;
+                obstacle.y += dy * force * 0.2;
                 
                 if (obstacle.y > CANVAS.groundY - obstacle.height) {
                     obstacle.y = CANVAS.groundY - obstacle.height;
@@ -1190,13 +1192,9 @@ export function updateAllEntities(gameStateParam) {
     updateBatProjectiles(gameStateParam);
 }
 
-// ENTITIES.JS - COLLISION SYSTEM KORREKTUR
-
 export function checkCollisions(gameStateParam) {
-    // WICHTIG: Invulnerability check ZUERST für ALLE Collision-Types
     if (isPlayerInvulnerable(gameStateParam)) {
-        // Shield collision handling - NUR wenn Shield aktiv aber nicht Ghost Walking
-        if (gameStateParam.shieldCharges > 0 && !gameStateParam.isGhostWalking) {
+        if (gameStateParam.hasShield && !gameStateParam.isGhostWalking) {
             for (let i = obstacles.length - 1; i >= 0; i--) {
                 const obstacle = obstacles[i];
                 const hitbox = getObstacleHitbox(obstacle);
@@ -1217,60 +1215,40 @@ export function checkCollisions(gameStateParam) {
                         continue;
                     }
                     
-                    // Tesla und Frankenstein - NUR Shield Damage wenn ZAP AKTIV
                     if (obstacle.type === 'teslaCoil') {
                         if (obstacle.state === 'zapping' && obstacle.zapActive) {
-                            gameStateParam.shieldCharges--;
-                            if (gameStateParam.shieldCharges <= 0) {
-                                gameStateParam.hasShield = false;
-                                gameStateParam.shieldCharges = 0;
-                            }
-                            createScorePopup(player.x + player.width/2, player.y, 
-                                gameStateParam.shieldCharges > 0 ? `Shield: ${gameStateParam.shieldCharges} left` : 'Shield Broken by Tesla!');
+                            gameStateParam.hasShield = false;
+                            createScorePopup(player.x + player.width/2, player.y, 'Shield Broken by Tesla!');
                             soundManager.hit();
                             break;
                         }
-                        continue; // Kein Schaden wenn nicht zapping
+                        continue;
                     }
                     
                     if (obstacle.type === 'frankensteinTable') {
                         if (obstacle.state === 'zapping' && obstacle.zapActive) {
-                            gameStateParam.shieldCharges--;
-                            if (gameStateParam.shieldCharges <= 0) {
-                                gameStateParam.hasShield = false;
-                                gameStateParam.shieldCharges = 0;
-                            }
-                            createScorePopup(player.x + player.width/2, player.y, 
-                                gameStateParam.shieldCharges > 0 ? `Shield: ${gameStateParam.shieldCharges} left` : 'Shield Broken by Frankenstein!');
+                            gameStateParam.hasShield = false;
+                            createScorePopup(player.x + player.width/2, player.y, 'Shield Broken by Frankenstein!');
                             soundManager.hit();
                             break;
                         }
-                        continue; // Kein Schaden wenn nicht zapping
+                        continue;
                     }
                     
-                    // Normal enemy collision - consume one shield charge
-                    gameStateParam.shieldCharges--;
-                    if (gameStateParam.shieldCharges <= 0) {
-                        gameStateParam.hasShield = false;
-                        gameStateParam.shieldCharges = 0;
-                    }
-                    
-                    createScorePopup(player.x + player.width/2, player.y, 
-                        gameStateParam.shieldCharges > 0 ? `Shield: ${gameStateParam.shieldCharges} left` : 'Shield Broken!');
+                    gameStateParam.hasShield = false;
+                    createScorePopup(player.x + player.width/2, player.y, 'Shield Broken!');
                     obstacles.splice(i, 1);
                     soundManager.hit();
                     break;
                 }
             }
         }
-        return false; // WICHTIG: Kein Schaden während Invulnerability
+        return;
     }
 
-    // NORMALE COLLISION LOGIC - nur wenn NICHT invulnerable
     for (let i = obstacles.length - 1; i >= 0; i--) {
         const obstacle = obstacles[i];
         
-        // Tesla Coil - KORRIGIERT: Nur Schaden bei ZAP + Position Check
         if (obstacle.type === 'teslaCoil') {
             if (obstacle.state === 'zapping' && obstacle.zapActive) {
                 const zapX = obstacle.x + obstacle.width/2 - 8;
@@ -1283,14 +1261,13 @@ export function checkCollisions(gameStateParam) {
                     player.y < zapY + zapHeight &&
                     player.y + player.height > zapY) {
                     
-                    // NORMALER SCHADEN - nicht instant kill
                     gameStateParam.lives--;
                     gameStateParam.damageThisLevel++;
                     createBloodParticles(player.x + player.width/2, player.y + player.height/2);
+                    
                     createLightningEffect(player.x + player.width/2, player.y + player.height/2);
                     
-                    // WICHTIG: Invulnerability nach Schaden setzen
-                    gameStateParam.postDamageInvulnerability = 120; // 2 Sekunden bei 60 FPS
+                    gameStateParam.postDamageInvulnerability = 60;
                     player.damageResistance = GAME_CONSTANTS.DAMAGE_RESISTANCE_TIME;
                     
                     gameStateParam.bulletsHit = 0;
@@ -1301,15 +1278,14 @@ export function checkCollisions(gameStateParam) {
                     soundManager.hit();
                     
                     if (gameStateParam.lives <= 0) {
-                        return true; // Game Over
+                        return true;
                     }
-                    return false; // Schaden genommen, aber nicht tot
+                    return false;
                 }
             }
-            continue; // Tesla ohne ZAP macht keinen Schaden
+            continue;
         }
         
-        // Frankenstein Table - KORRIGIERT: Nur Schaden bei ZAP + Position Check
         if (obstacle.type === 'frankensteinTable') {
             if (obstacle.state === 'zapping' && obstacle.zapActive) {
                 const zapX = obstacle.x + obstacle.width/2 - 12;
@@ -1322,14 +1298,13 @@ export function checkCollisions(gameStateParam) {
                     player.y < zapY + zapHeight &&
                     player.y + player.height > zapY) {
                     
-                    // NORMALER SCHADEN - nicht instant kill
                     gameStateParam.lives--;
                     gameStateParam.damageThisLevel++;
                     createBloodParticles(player.x + player.width/2, player.y + player.height/2);
+                    
                     createLightningEffect(player.x + player.width/2, player.y + player.height/2);
                     
-                    // WICHTIG: Invulnerability nach Schaden setzen
-                    gameStateParam.postDamageInvulnerability = 120; // 2 Sekunden bei 60 FPS
+                    gameStateParam.postDamageInvulnerability = 60;
                     player.damageResistance = GAME_CONSTANTS.DAMAGE_RESISTANCE_TIME;
                     
                     gameStateParam.bulletsHit = 0;
@@ -1340,15 +1315,14 @@ export function checkCollisions(gameStateParam) {
                     soundManager.hit();
                     
                     if (gameStateParam.lives <= 0) {
-                        return true; // Game Over
+                        return true;
                     }
-                    return false; // Schaden genommen, aber nicht tot
+                    return false;
                 }
             }
-            continue; // Frankenstein ohne ZAP macht keinen Schaden
+            continue;
         }
         
-        // NORMALE GEGNER COLLISION
         const hitbox = getObstacleHitbox(obstacle);
         
         if (player.x < hitbox.x + hitbox.width &&
@@ -1364,16 +1338,14 @@ export function checkCollisions(gameStateParam) {
             }
             
             if (obstacle.type === 'rock' || obstacle.type === 'sarcophagus') {
-                continue; // Kein Schaden
+                continue;
             }
             
-            // NORMALER ENEMY SCHADEN
             gameStateParam.lives--;
             gameStateParam.damageThisLevel++;
             createBloodParticles(player.x + player.width/2, player.y + player.height/2);
             
-            // WICHTIG: Invulnerability nach Schaden setzen
-            gameStateParam.postDamageInvulnerability = 120; // 2 Sekunden bei 60 FPS
+            gameStateParam.postDamageInvulnerability = 60;
             player.damageResistance = GAME_CONSTANTS.DAMAGE_RESISTANCE_TIME;
             
             gameStateParam.bulletsHit = 0;
@@ -1384,37 +1356,14 @@ export function checkCollisions(gameStateParam) {
             soundManager.hit();
             
             if (gameStateParam.lives <= 0) {
-                return true; // Game Over
+                return true;
             }
-            break; // Nur ein Gegner pro Frame
+            break;
         }
     }
     
-    return false; // Kein Game Over
+    return false;
 }
-
-// WICHTIGE ÄNDERUNGEN ZUSAMMENGEFASST:
-/*
-🔧 TESLA & FRANKENSTEIN FIX:
-- Machen jetzt nur 1 Schaden pro Hit (nicht instant kill)
-- Schaden nur wenn ZAP aktiv UND Spieler in Zap-Zone
-- Normale 2-Sekunden Invulnerability nach Treffer
-
-🔧 INVULNERABILITY FIX:
-- isPlayerInvulnerable() check ZUERST für alle Collision-Types
-- postDamageInvulnerability = 120 (2 Sekunden bei 60 FPS) nach JEDEM Schaden
-- Shields funktionieren nur während Invulnerability
-
-🔧 LOGIK-REIHENFOLGE:
-1. Invulnerable? → Nur Shield-Logik, kein Schaden
-2. Nicht Invulnerable? → Normale Schaden-Logik + Invulnerability setzen
-
-RESULT:
-✅ Tesla/Frankenstein machen 1 Schaden, nicht instant kill
-✅ 2 Sekunden Schonzeit nach jedem Treffer
-✅ Shields funktionieren korrekt während Invulnerability
-✅ Keine doppelten Treffer von aufeinanderfolgenden Gegnern
-*/
 
 // Environment functions
 export function initEnvironmentElements() {

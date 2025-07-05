@@ -14,7 +14,7 @@ export const gameState = {
     gameRunning: false,
     gameLoop: null,
     needsRedraw: true,
-    shieldCharges: 0,  // Anzahl der Shield-Ladungen (0-5)
+    
     
         isCorrupted: false,
     corruptionTimer: 0,
@@ -27,7 +27,7 @@ export const gameState = {
     // Game statistics
     score: 0,
     lives: 4,
-    maxLives: 5,
+    maxLives: 4,
     gameSpeed: 1, // Zurück auf ursprünglichen Wert
     bullets: 10,
     level: 1,
@@ -76,10 +76,6 @@ export const gameState = {
 };
 
 export function resetGame() {
-	
-	
-	gameState.shieldCharges = 0;
-	gameState.hasShield = false;
     resetBulletBoxesFound();
     gameState.score = 0;
     gameState.lives = 4;

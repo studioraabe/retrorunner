@@ -34,11 +34,9 @@ export function unlockAchievement(id) {
         case 'firstBlood':
             // Higher drop rates - handled in rollForDrop
             break;
-       case 'untouchable':
-    // Start with 1 shield charge instead of just hasShield = true
-    gameState.shieldCharges = 1;
-    gameState.hasShield = true;
-    break;
+        case 'untouchable':
+            // Start with shield - handled in game start
+            break;
         case 'sharpshooter':
             window.gameState.hasPiercingBullets = true;
             break;
@@ -176,18 +174,10 @@ export function collectDrop(drop) {
             createScorePopup(drop.x, drop.y, 'Jump Boost!');
             break;
             
-      case DropType.SHIELD:
-    // Stack shields bis zu 5
-    if (gameState.shieldCharges < 5) {
-        gameState.shieldCharges++;
-        gameState.hasShield = true;
-        createScorePopup(drop.x, drop.y, `Shield +1 (${gameState.shieldCharges}x)`);
-    } else {
-        // Max shields erreicht - Bonus Score stattdessen
-        gameState.score += 500 * gameState.scoreMultiplier;
-        createScorePopup(drop.x, drop.y, '+500 Shield Bonus!');
-    }
-    break;
+        case DropType.SHIELD:
+            gameState.hasShield = true;
+            createScorePopup(drop.x, drop.y, 'Shield!');
+            break;
             
         case DropType.SCORE_MULTIPLIER:
             activeDropBuffs.scoreMultiplier = Math.min(

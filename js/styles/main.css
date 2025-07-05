@@ -18,7 +18,7 @@
     --text-secondary: #d0d0d0;
     --text-accent: #00ff88;
     --shadow-lg: 0 25px 50px -12px rgba(0, 211, 112, 0.10);
-    --shadow-xl: 0 35px 56px -12px rgba(0, 211, 112, 0.15);
+    --shadow-xl: 0 35px 60px -12px rgba(0, 211, 112, 0.15);
     --border-radius: 12px;
     --border-radius-lg: 20px;
 }
@@ -42,12 +42,10 @@ body {
     font-weight: 500;
 }
 
-
-
 .logo {
     position: absolute;
-    top: 87px;
-    z-index: 1110;
+    top: 60px;
+    z-index: 10;
     left: 50%;
     transform: translateX(-50%);
     color: transparent;
@@ -55,7 +53,8 @@ body {
     width: 140px;
     height: 100px;
     background: url(../img/retro.svg);
-	background-size: cover; }
+    background-size: cover;
+}
 
 /* Enhanced buffs positioning fix */
 .enhanced-buffs-container {
@@ -104,7 +103,7 @@ body::before {
 #gameContainer {
     position: relative;
     border-radius: var(--border-radius-lg);
-    overflow:hidden;
+    overflow: hidden;
     box-shadow: var(--shadow-xl);
     border: 1px solid var(--glass-border);
     background: var(--glass);
@@ -256,12 +255,11 @@ position: absolute;
 
 /* SCORE PANEL STYLES */
 #scorePanel {
-position: absolute;
+    position: absolute;
     top: 20px;
     left: 50%;
     transform: translateX(-50%);
-    display: flex
-;
+    display: flex;
     gap: 40px;
     padding: 10px 24px;
     align-items: center;
@@ -269,12 +267,11 @@ position: absolute;
 }
 
 .score-item {
-  display: flex;
-    flex-direction: column;
+       display: flex
+;    flex-direction: row;
     align-items: center;
-    gap: 0px;
+    gap: 8px;
     color: var(--text-secondary);
-    min-width: 50px;
 }
 
 

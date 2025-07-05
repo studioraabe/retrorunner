@@ -1,4 +1,4 @@
-// ui-enhancements.js - Enhanced UI Visualizations - SYNTAX KORRIGIERT
+// ui-enhancements.js - Enhanced UI Visualizations - CLEAN VERSION
 
 import { gameState } from './core/gameState.js';
 import { activeDropBuffs } from './systems.js';
@@ -45,14 +45,6 @@ export function initEnhancedContainers() {
 let lastComboCount = 0;
 let lastComboTimer = 0;
 let displayWasVisible = false;
-
-// Helper function für RGBA conversion - MUSS VOR der Funktion stehen!
-function hexToRgba(hex, alpha = 1) {
-    const r = parseInt(hex.slice(1, 3), 16);
-    const g = parseInt(hex.slice(3, 5), 16);
-    const b = parseInt(hex.slice(5, 7), 16);
-    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-}
 
 export function updateEnhancedComboDisplay() {
     if (!gameState) return;
@@ -122,41 +114,32 @@ export function updateEnhancedComboDisplay() {
             </div>
         `;
         
-        // Canvas glow effect - FIXED VERSION
+        // Canvas glow effect
         const canvas = document.getElementById('gameCanvas');
-        const container = document.getElementById('gameContainer');
-
         if (canvas && gameState.comboCount >= 20) {
             const glowIntensity = Math.min((gameState.comboCount - 20) * 0.5, 10);
-            const comboColor = getComboColor(gameState.comboCount);
-            
-            // Option 1: Container-Glow (empfohlen)
-            if (container) {
-                // Stelle sicher dass overflow visible ist für den Glow
-                const currentOverflow = container.style.overflow;
-                if (currentOverflow === 'hidden') {
-                    container.style.overflow = 'visible';
-                }
-                
-                container.style.boxShadow = `
-                    0 0 ${glowIntensity * 2}px ${comboColor}, 
-                    0 0 ${glowIntensity * 4}px ${comboColor}40,
-                    inset 0 0 ${glowIntensity}px ${comboColor}20
-                `;
-            }
-            
-            // Option 2: Canvas-Glow als Fallback
-            canvas.style.boxShadow = `0 0 ${glowIntensity}px ${comboColor}`;
-            
-        } else {
-            // Reset both when combo ends
-            if (canvas) canvas.style.boxShadow = '';
-            if (container) {
-                container.style.boxShadow = '';
-                // Optional: overflow zurücksetzen falls nötig
-                // container.style.overflow = 'hidden';
-            }
+            canvas.style.filter = `drop-shadow(0 0 ${glowIntensity}px ${comboColor})`;
+        } else if (canvas) {
+            canvas.style.filter = '';
         }
+        
+        // Cleanup wiggle animation
+        if (shouldWiggle) {
+            setTimeout(() => {
+                const numberEl = comboDisplay.querySelector('.combo-number-subtle');
+                if (numberEl) numberEl.classList.remove('combo-wiggle');
+            }, 300);
+        }
+        
+    } else if (displayWasVisible) {
+        // Hide when no longer needed
+        comboDisplay.className = 'combo-display-enhanced';
+        comboDisplay.style.display = 'none';
+        comboDisplay.innerHTML = '';
+        displayWasVisible = false;
+        
+        const canvas = document.getElementById('gameCanvas');
+        if (canvas) canvas.style.filter = '';
     }
 }
 
@@ -188,24 +171,7 @@ export function updateEnhancedBuffDisplay() {
     const activeBuffsHTML = [];
     const currentBuffs = new Set();
     
-    // SHIELD FIRST - Always on top of the list
-    if (gameState.shieldCharges > 0) {
-        const isNew = !previousBuffs.has('shield');
-        const chargeText = gameState.shieldCharges === 1 ? '1x Charge' : `${gameState.shieldCharges}x Charges`;
-        
-        activeBuffsHTML.push(`
-            <div class="buff-item buff-shield ${isNew ? 'buff-new' : ''}">
-                <div class="buff-icon">🛡️</div>
-                <div class="buff-info">
-                    <div class="buff-name">Shield</div>
-                    <div class="buff-status">${chargeText}</div>
-                </div>
-            </div>
-        `);
-        currentBuffs.add('shield');
-    }
-    
-    // THEN temporary buffs with timers (below shield)
+    // Temporary buffs with timers
     if (activeDropBuffs && typeof activeDropBuffs === 'object') {
         Object.keys(activeDropBuffs).forEach(buffKey => {
             const remaining = activeDropBuffs[buffKey];
@@ -235,15 +201,32 @@ export function updateEnhancedBuffDisplay() {
         });
     }
     
+    // Shield indicator
+    if (gameState.hasShield) {
+        const isNew = !previousBuffs.has('shield');
+        activeBuffsHTML.push(`
+            <div class="buff-item buff-shield ${isNew ? 'buff-new' : ''}">
+                <div class="buff-icon">🛡️</div>
+                <div class="buff-info">
+                    <div class="buff-name">Shield</div>
+                    <div class="buff-status">ACTIVE</div>
+                </div>
+            </div>
+        `);
+        currentBuffs.add('shield');
+    }
+    
     // Update container
     buffContainer.innerHTML = activeBuffsHTML.join('');
     
+    // Hide container if no buffs active
     if (activeBuffsHTML.length === 0) {
         buffContainer.style.display = 'none';
     } else {
         buffContainer.style.display = 'block';
     }
     
+    // Update previous buffs for next call
     previousBuffs = currentBuffs;
 }
 

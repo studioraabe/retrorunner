@@ -830,7 +830,7 @@ function drawSkeleton(ctx, x, y, animTime = 0) {
     
     // Seelenfeuer in den Augen (dezent)
     const eyeFlicker = 0.4 + Math.sin(timeScale * 8) * 0.3;
-    ctx.fillStyle = `rgba(255, 0, 0, ${eyeFlicker})`;
+    ctx.fillStyle = `rgba(0, 206, 209, ${eyeFlicker})`;
     ctx.fillRect(x + 15 * scale + sway, y + 11 * scale + jointLoose, 2 * scale, 2 * scale);
     ctx.fillRect(x + 24 * scale + sway, y + 11 * scale + jointLoose, 2 * scale, 2 * scale);
     
@@ -1464,9 +1464,6 @@ function drawSpider(ctx, x, y, isBoss = false, animTime = 0) {
     ctx.fillRect(x + 10 * scale, y + 22 * scale + bodyBob, 24 * scale, 2 * scale);
 }
 
-
-
-
 function drawWolf(ctx, x, y, isAlpha = false, animTime = 0, obstacle = null) {
     const scale = isAlpha ? 2.2 : 1.4; // Alpha deutlich größer
     const timeScale = animTime * 0.001;
@@ -1474,23 +1471,19 @@ function drawWolf(ctx, x, y, isAlpha = false, animTime = 0, obstacle = null) {
     const breathe = Math.sin(timeScale * 4) * 1; // Schweres Atmen
     const snarl = Math.sin(timeScale * 8) > 0.5; // Zähne fletschen
     
-   let shouldFlip = false;
-
-if (obstacle && obstacle.type === 'alphaWolf') {
-    if (obstacle.isFuryCharging || obstacle.isLeaping) {
-        // Im Fury Mode: Zum Spieler schauen - richtige Richtungsbestimmung
-        const playerCenterX = player.x + player.width/2;
-        const wolfCenterX = obstacle.x + obstacle.width/2;
-        
-        // Wenn Spieler LINKS vom Wolf ist -> Wolf muss nach LINKS schauen (spiegeln)
-        shouldFlip = playerCenterX < wolfCenterX;
-    } else {
-        // Normale Bewegung: Standard-Spiegelungslogik
-        shouldFlip = obstacle.facingDirection === -1;
+    // KORREKTE Richtungslogik:
+    // facingDirection: 1 = nach rechts laufen (Wolf dreht sich um), -1 = nach links laufen (normal)
+    // Wolf-Grafik zeigt standardmäßig nach rechts, also flippen wenn nach rechts laufen soll
+    const facingLeft = obstacle && obstacle.facingDirection === 1;
+    
+    console.log('Wolf drawn with facingDirection:', obstacle?.facingDirection, 'facingLeft:', facingLeft); // Debug
+    
+    // Horizontal flippen wenn Wolf nach links schaut
+    if (facingLeft) {
+        ctx.save();
+        ctx.scale(-1, 1);
+        x = -x - (48 * scale); // Wolf width kompensieren
     }
-}
-
-const facingLeft = shouldFlip;
     
     // Bedrohlicher Schatten
     ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
@@ -1810,8 +1803,6 @@ const facingLeft = shouldFlip;
         ctx.restore();
     }
 }
-
-
 
 
 

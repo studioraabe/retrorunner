@@ -28,27 +28,33 @@ export function drawPlayer(ctx, x, y, player, gameState) {
     // ===== NEUE GLOW EFFEKTE =====
     
     // Shield Glow - Blauer Schutzschild
-    if (gameState.shieldCharges > 0) {
-    for (let i = 0; i < Math.min(gameState.shieldCharges, 3); i++) { // Max 3 visual rings
-        const shieldPulse = 0.7 + Math.sin(Date.now() * 0.003 + i * 0.5) * 0.3;
-        const shieldRadius = 35 + (i * 8); // Each shield adds 8px radius
-        const shieldAlpha = shieldPulse * (0.8 - i * 0.15); // Outer shields are more transparent
-        
-        ctx.strokeStyle = `rgba(65, 105, 225, ${shieldAlpha})`;
-        ctx.lineWidth = 3 - i; // Outer shields are thinner
+    if (gameState.hasShield) {
+        const shieldPulse = 0.7 + Math.sin(Date.now() * 0.003) * 0.3;
+        ctx.strokeStyle = `rgba(65, 105, 225, ${shieldPulse})`;
+        ctx.lineWidth = 3;
         ctx.beginPath();
-        ctx.arc(player.width/2, player.height/2, shieldRadius, 0, Math.PI * 2);
+        ctx.arc(player.width/2, player.height/2, 35, 0, Math.PI * 2);
         ctx.stroke();
         
         // Inner shield glow
-        ctx.fillStyle = `rgba(65, 105, 225, ${shieldAlpha * 0.15})`;
+        ctx.fillStyle = `rgba(65, 105, 225, ${shieldPulse * 0.2})`;
         ctx.beginPath();
-        ctx.arc(player.width/2, player.height/2, shieldRadius, 0, Math.PI * 2);
+        ctx.arc(player.width/2, player.height/2, 35, 0, Math.PI * 2);
         ctx.fill();
     }
     
-  
-}
+    // Speed Boost - Blaue Geschwindigkeitslinien
+    if (activeDropBuffs.speedBoost) {
+        ctx.strokeStyle = 'rgba(0, 255, 255, 0.6)';
+        ctx.lineWidth = 2;
+        for (let i = 0; i < 5; i++) {
+            const offset = Math.sin(Date.now() * 0.01 + i) * 5;
+            ctx.beginPath();
+            ctx.moveTo(-5 - i * 8 + offset, 10 + i * 8);
+            ctx.lineTo(-15 - i * 12 + offset, 10 + i * 8);
+            ctx.stroke();
+        }
+    }
     
     
     
@@ -425,19 +431,19 @@ function drawDungeonCharacter(ctx, x, y, facingLeft = false, isDead = false) {
     ctx.fillRect(x + 22, y + 35, 3, 4);
     ctx.fillRect(x + 17, y + 28, 2, 8);
     
-       // Arms with green gloves - IMMER GLEICHE POSITIONEN! ❌
+    // Arms with green gloves
     ctx.fillStyle = '#5F9F5F';
-    ctx.fillRect(x + 6, y + 28, 7, 16);   // Linker Arm
+    ctx.fillRect(x + 6, y + 28, 7, 16);
     ctx.fillStyle = '#90EE90';
-    ctx.fillRect(x + 4, y + 28, 6, 16);   // Linker Arm
+    ctx.fillRect(x + 4, y + 28, 6, 16);
     
     ctx.fillStyle = '#90EE90';
-    ctx.fillRect(x + 26, y + 28, 8, 16);  // Rechter Arm
+    ctx.fillRect(x + 26, y + 28, 8, 16);
     
-    // Green gloves/hands - IMMER GLEICHE POSITIONEN! ❌
-    ctx.fillStyle = '#5F9F5F';
-    ctx.fillRect(x + 3, y + 42, 7, 6);    // Linke Hand
-    ctx.fillRect(x + 26, y + 42, 7, 6);   // Rechte Hand
+    // Green gloves/hands
+    ctx.fillStyle = '#5F9F5F'; // Dunkelgrün
+    ctx.fillRect(x + 3, y + 42, 7, 6); // Linke Hand
+    ctx.fillRect(x + 26, y + 42, 7, 6); // Rechte Hand
     
     // Handschuh-Details
     ctx.fillStyle = '#90EE90'; // Hellgrün
